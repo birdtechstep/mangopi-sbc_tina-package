@@ -32,7 +32,7 @@ include $(BUILD_DIR)/package.mk
 include ../sunxifb.mk
 
 PKG_NAME:=lv_examples
-PKG_VERSION:=8.1.0
+PKG_VERSION:=8.3.8
 PKG_RELEASE:=1
 
 PKG_BUILD_DIR := $(COMPILE_DIR)/$(PKG_NAME)
@@ -43,7 +43,7 @@ define Package/$(PKG_NAME)
   CATEGORY:=Gui
   DEPENDS:=+LVGL8_USE_SUNXIFB_G2D:libuapi +LVGL8_USE_SUNXIFB_G2D:kmod-sunxi-g2d \
            +LVGL8_USE_FREETYPE:libfreetype
-  TITLE:=lvgl examples use lvgl-8.1.0
+  TITLE:=lvgl examples use lvgl-8.3.8
   MAINTAINER:=anruliu <anruliu@allwinnertech.com>
 endef
 
@@ -61,7 +61,7 @@ define Package/$(PKG_NAME)/Default
 endef
 
 define Package/$(PKG_NAME)/description
-  a lvgl demo v8.1.0
+  a lvgl demo v8.3.8
 endef
 
 define Build/Prepare
@@ -69,7 +69,7 @@ define Build/Prepare
 	$(CP) ./src $(PKG_BUILD_DIR)/
 	$(CP) ./../lvgl $(PKG_BUILD_DIR)/src/
 	$(CP) ./../lv_drivers $(PKG_BUILD_DIR)/src/
-	$(CP) ./../lv_demos $(PKG_BUILD_DIR)/src/
+	$(CP) ./../lvgl/demos $(PKG_BUILD_DIR)/src/
 endef
 
 define Build/Configure

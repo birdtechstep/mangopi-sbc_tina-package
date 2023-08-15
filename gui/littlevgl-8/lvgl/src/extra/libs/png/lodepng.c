@@ -39,10 +39,6 @@ Rename this file to lodepng.cpp to use it for C++, or to lodepng.c to use it for
 #include <stdlib.h> /* allocations */
 #endif /* LODEPNG_COMPILE_ALLOCATORS */
 
-#if LV_USE_SUNXIFB_G2D_BLEND
-#include "../../../../../lv_drivers/display/sunximem.h"
-#endif /* LV_USE_SUNXIFB_G2D_BLEND */
-
 #if defined(_MSC_VER) && (_MSC_VER >= 1310) /*Visual Studio: A few warning types are not desired here.*/
 #pragma warning( disable : 4244 ) /*implicit conversions: not warned by gcc -Wall -Wextra and requires too much casts*/
 #pragma warning( disable : 4996 ) /*VS does not like fopen, but fopen_s is not standard C so unusable here*/
@@ -123,14 +119,12 @@ to something as fast. */
 
 static void lodepng_memcpy(void* LODEPNG_RESTRICT dst,
                            const void* LODEPNG_RESTRICT src, size_t size) {
-  size_t i;
-  for(i = 0; i < size; i++) ((char*)dst)[i] = ((const char*)src)[i];
+  lv_memcpy(dst, src, size);
 }
 
 static void lodepng_memset(void* LODEPNG_RESTRICT dst,
                            int value, size_t num) {
-  size_t i;
-  for(i = 0; i < num; i++) ((char*)dst)[i] = (char)value;
+  lv_memset(dst, value, num);
 }
 
 /* does not check memory out of bounds, do not use on untrusted data */
@@ -4947,11 +4941,7 @@ static void decodeGeneric(unsigned char** out, unsigned* w, unsigned* h,
 
   if(!state->error) {
     outsize = lodepng_get_raw_size(*w, *h, &state->info_png.color);
-#if LV_USE_SUNXIFB_G2D_BLEND
-    *out = (unsigned char*) sunxifb_mem_alloc(outsize, "png_decodeGeneric");
-#else
     *out = (unsigned char*)lodepng_malloc(outsize);
-#endif /* LV_USE_SUNXIFB_G2D_BLEND */
     if(!*out) state->error = 83; /*alloc fail*/
   }
   if(!state->error) {
@@ -4987,21 +4977,13 @@ unsigned lodepng_decode(unsigned char** out, unsigned* w, unsigned* h,
     }
 
     outsize = lodepng_get_raw_size(*w, *h, &state->info_raw);
-#if LV_USE_SUNXIFB_G2D_BLEND
-    *out = (unsigned char*) sunxifb_mem_alloc(outsize, "lodepng_decode");
-#else
     *out = (unsigned char*)lodepng_malloc(outsize);
-#endif /* LV_USE_SUNXIFB_G2D_BLEND */
     if(!(*out)) {
       state->error = 83; /*alloc fail*/
     }
     else state->error = lodepng_convert(*out, data, &state->info_raw,
                                         &state->info_png.color, *w, *h);
-#if LV_USE_SUNXIFB_G2D_BLEND
-    sunxifb_mem_free((void**) &data, "lodepng_decode");
-#else
     lodepng_free(data);
-#endif /* LV_USE_SUNXIFB_G2D_BLEND */
   }
   return state->error;
 }
@@ -5772,7 +5754,7 @@ static unsigned preProcessScanlines(unsigned char** out, size_t* outsize, const 
     adam7 = (unsigned char*)lodepng_malloc(passstart[7]);
     if(!adam7 && passstart[7]) error = 83; /*alloc fail*/
 
-    if(!error) {
+    if(!error && adam7) {
       unsigned i;
 
       Adam7_interlace(adam7, in, w, h, bpp);

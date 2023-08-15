@@ -1,7 +1,7 @@
 #include "lvgl/lvgl.h"
 #include "lv_drivers/display/sunxifb.h"
 #include "lv_drivers/indev/evdev.h"
-#include "lv_demos/lv_demo.h"
+#include "lvgl/demos/lv_demos.h"
 #include <unistd.h>
 #include <pthread.h>
 #include <time.h>
